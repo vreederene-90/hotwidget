@@ -23,7 +23,6 @@ hotwidget <- function(
     height = NULL,
     elementId = NULL,
     rowHeaders = FALSE,
-    colHeaders = TRUE,
     columnSorting = TRUE,
     autoWrapRow = TRUE,
     autoWrapCol = TRUE,
@@ -35,13 +34,20 @@ hotwidget <- function(
 
   # forward options using x
   x = list(
+    data_types = list(
+      character = colnames(select(data, where(is.character))),
+      numeric = colnames(select(data, where(is.numeric))),
+      date = colnames(select(data, where(is.Date))),
+      factor = colnames(select(data, where(is.factor))),
+      integer = colnames(select(data, where(is.integer)))
+    ),
     data =
       jsonlite::toJSON(
       data,
       na = "null",
       rownames = FALSE),
     rowHeaders = rowHeaders,
-    colHeaders = colHeaders,
+    colHeaders = names(data),
     columnSorting = columnSorting,
     autoWrapRow = autoWrapRow,
     autoWrapCol = autoWrapCol,

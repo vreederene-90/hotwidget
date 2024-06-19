@@ -6,23 +6,31 @@ HTMLWidgets.widget({
 
   factory: function(el, width, height) {
 
-    var elementId = el.id;
-    const container = document.getElementById(elementId);
-    let initialized = false;
-
       return {
 
-        renderValue: function(opts) {
-          const hot = new Handsontable(container, opts);
-          var that = this;
-          if (!initialized) {
-            initialized = true;
-            container.widget = that;
-          }
-        },
+        renderValue: function(params) {
+          var elementId = el.id;
+          const container = document.getElementById(elementId);
+          const hot = new Handsontable(container, params)
 
+          hot.addHook(
+            'afterChange',
+            function(changes) {
+
+              Shiny.setInputValue(
+                elementId,
+                {
+                  data: hot.getSourceData(),
+                  headers: hot.getColHeader(),
+                  data_types: params.data_types
+                }
+              )
+            }
+          )
+        },
         resize: function(width, height) {
         }
       };
   }
 });
+

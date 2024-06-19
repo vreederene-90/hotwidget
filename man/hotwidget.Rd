@@ -10,7 +10,6 @@ hotwidget(
   height = NULL,
   elementId = NULL,
   rowHeaders = FALSE,
-  colHeaders = TRUE,
   columnSorting = TRUE,
   autoWrapRow = TRUE,
   autoWrapCol = TRUE,
@@ -31,8 +30,6 @@ hotwidget(
 
 \item{rowHeaders}{Show row headers}
 
-\item{colHeaders}{Show column headers}
-
 \item{columnSorting}{Enable column sorting}
 
 \item{autoWrapRow}{Enable auto wrap for rows}
@@ -46,6 +43,8 @@ hotwidget(
 \item{contextMenu}{Enable context menu}
 
 \item{licenseKey}{License key}
+
+\item{colHeaders}{Show column headers}
 }
 \description{
 hotwidget: Handsontable widget for R
