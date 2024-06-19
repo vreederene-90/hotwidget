@@ -19,6 +19,7 @@
 #' @export
 hotwidget <- function(
     data,
+    columns = NULL,
     width = NULL,
     height = NULL,
     elementId = NULL,
@@ -32,8 +33,59 @@ hotwidget <- function(
     licenseKey = 'non-commercial-and-evaluation'
     ) {
 
+  # browser()
+
+  col_types <- map_chr(data, class)
+
+  # handsontable data types
+  # autocomplete
+  # checkbox
+  # date
+  # dropdown
+  # numeric
+  # text
+
+  if (is.null(columns))
+    columns <- imap(
+      col_types,
+      \(x, idx) {
+        list(
+          data = idx,
+          type = switch(
+            x,
+            character = 'text',
+            numeric = 'numeric',
+            Date = 'date',
+            factor = 'dropdown',
+            integer = 'numeric',
+            'text'
+          ),
+          source = switch(
+            x,
+            factor = unique(data[[idx]]),
+            NA
+          ),
+          numericFormat = switch(
+            x,
+            numeric = list(pattern = '0'),
+            NA
+          ),
+          dateFormat = switch(
+            x,
+            Date = 'YYYY-MM-DD',
+            NA
+          )
+        )
+      }
+    ) |> unname()
+
   # forward options using x
   x = list(
+    data =
+      jsonlite::toJSON(
+      data,
+      na = "null",
+      rownames = FALSE),
     data_types = list(
       character = colnames(select(data, where(is.character))),
       numeric = colnames(select(data, where(is.numeric))),
@@ -41,11 +93,7 @@ hotwidget <- function(
       factor = colnames(select(data, where(is.factor))),
       integer = colnames(select(data, where(is.integer)))
     ),
-    data =
-      jsonlite::toJSON(
-      data,
-      na = "null",
-      rownames = FALSE),
+    columns = columns,
     rowHeaders = rowHeaders,
     colHeaders = names(data),
     columnSorting = columnSorting,

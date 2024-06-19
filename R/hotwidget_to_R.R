@@ -9,8 +9,12 @@ hotwidget_to_R <- function(dat) {
 
   map(
     dat$data,
-    \(.x) as_tibble(.x, .name_repair = ~headers) |>
-    mutate(across(everything(),as.character)))|>
+    \(.x) {
+      as_tibble(
+        map(.x, \(.x) ifelse(is.null(.x),NA,.x)),
+        .name_repair = ~headers)
+    }
+  )|>
     bind_rows() |>
     mutate(
       across(any_of(num_cols), as.numeric),

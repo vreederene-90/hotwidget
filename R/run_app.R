@@ -14,7 +14,7 @@ run_app <- function() {
 
     output$hotwidget <- renderHotwidget(
       hotwidget(
-        data = data
+        data = iris |> janitor::clean_names() |> mutate(test = as_date(paste(Sys.Date())))
         )
     )
 
