@@ -1,12 +1,24 @@
 Package: hotwidget
-Title: What the Package Does (One Line, Title Case)
+Title: Create Mutatable Spreadsheet Visualisations in Shiny
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("René", "Vreede", , "vreede.rene@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: A wrapper around the handsontable.js library for Shiny applications.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Imports: 
+    cli (>= 3.6.1),
+    devtools (>= 2.4.5),
+    dplyr (>= 1.1.3),
+    htmlwidgets (>= 1.6.2),
+    janitor (>= 2.2.0),
+    jsonlite (>= 1.8.7),
+    lubridate (>= 1.9.3),
+    purrr (>= 1.0.2),
+    renv (>= 1.0.3),
+    shiny (>= 1.7.5.1),
+    tidyr (>= 1.3.0),
+    withr (>= 2.5.1)
