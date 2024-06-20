@@ -30,10 +30,14 @@ hotwidget <- function(
     filters = TRUE,
     dropdownMenu = TRUE,
     contextMenu = TRUE,
-    licenseKey = 'non-commercial-and-evaluation'
+    licenseKey = NA
     ) {
 
-  # browser()
+  if (is.na(licenseKey)) {
+    cli::cli_alert_warning(
+      "Missing license key"
+    )
+  }
 
   col_types <- map_chr(data, class)
 
