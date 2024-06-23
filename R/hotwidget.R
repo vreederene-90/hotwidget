@@ -3,7 +3,6 @@
 #' @param data A data frame or matrix
 #' @param width Width of the widget
 #' @param height Height of the widget
-#' @param elementId Id of the widget
 #' @param rowHeaders Show row headers
 #' @param colHeaders Show column headers
 #' @param columnSorting Enable column sorting
@@ -20,9 +19,9 @@
 hotwidget <- function(
     data,
     columns = NULL,
+    # columns_data_types = TRUE,
     width = NULL,
     height = NULL,
-    elementId = NULL,
     rowHeaders = FALSE,
     columnSorting = TRUE,
     autoWrapRow = TRUE,
@@ -49,7 +48,10 @@ hotwidget <- function(
   # numeric
   # text
 
-  if (is.null(columns))
+  if (
+    # is.null(columns) & columns_data_types
+    is.null(columns)
+  )
     columns <- imap(
       col_types,
       \(x, idx) {
@@ -89,24 +91,39 @@ hotwidget <- function(
       jsonlite::toJSON(
       data,
       na = "null",
-      rownames = FALSE),
-    data_types = list(
-      character = colnames(select(data, where(is.character))),
-      numeric = colnames(select(data, where(is.numeric))),
-      date = colnames(select(data, where(is.Date))),
-      factor = colnames(select(data, where(is.factor))),
-      integer = colnames(select(data, where(is.integer)))
-    ),
+      dataframe =
+        # if (columns_data_types) "rows" else "values",
+        "rows",
+      digits = NA
+      ),
     columns = columns,
+      # if(columns_data_types) columns else NULL,
+    undo = FALSE,
     rowHeaders = rowHeaders,
     colHeaders = names(data),
     columnSorting = columnSorting,
     autoWrapRow = autoWrapRow,
     autoWrapCol = autoWrapCol,
     filters = filters,
-    dropdownMenu = dropdownMenu,
-    contextMenu = contextMenu,
-    licenseKey = 'non-commercial-and-evaluation'
+    dropdownMenu = if(dropdownMenu) {
+      list(
+        'clear_column',
+        "filter_by_condition",
+        "filter_by_condition2",
+        "filter_operators",
+        "filter_by_value",
+        "filter_action_bar"
+      )
+    } else FALSE,
+    contextMenu = if(contextMenu) {
+      list(
+        'row_above',
+        'row_below',
+        'remove_row',
+        'clear_column'
+      )
+    } else FALSE,
+    licenseKey = licenseKey
   )
 
   # create widget
@@ -115,8 +132,7 @@ hotwidget <- function(
     x,
     width = width,
     height = height,
-    package = 'hotwidget',
-    elementId = elementId
+    package = 'hotwidget'
   )
 }
 

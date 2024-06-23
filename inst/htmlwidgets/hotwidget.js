@@ -17,18 +17,12 @@ HTMLWidgets.widget({
             'afterChange',
             function(changes) {
 
-              console.log('visual index:', changes.map(x => x[0]))
-
-              // changes.map(x => x[0]).map(x => hot.getData()[x])
-              console.log(
-                'keys', changes.map(x => x[0]).map(x => hot.getData()[x]).map(x => x[0])
-                )
-
               Shiny.setInputValue(
-                elementId,
+                elementId + '_afterchange',
                 {
-                  changes: changes,
-                  physical_keys: changes.map(x => x[0]).map(x => hot.getData()[x]).map(x => x[0])
+                  row: changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
+                  col: changes.map(x => x[1]),
+                  val: changes.map(x => x[3])
                 }
               )
             }
@@ -38,21 +32,14 @@ HTMLWidgets.widget({
             'afterRemoveRow',
             function(index, amount, physicalRows) {
 
-              console.log(index)
-              console.log(amount)
-              console.log(physicalRows)
-
-            }
-          );
-
-          hot.addHook(
-            'afterRemoveCol',
-            function(index, amount, physicalColumns) {
-
-              console.log(index)
-              console.log(amount)
-              console.log(physicalColumns)
-
+              Shiny.setInputValue(
+                elementId + '_afterremoverow',
+                {
+                  index: index,
+                  amount: amount,
+                  physicalRows: physicalRows
+                }
+              )
             }
           );
 
@@ -60,9 +47,29 @@ HTMLWidgets.widget({
             'afterCreateRow',
             function(index, amount) {
 
-              console.log(index)
-              console.log(amount)
+              console.log(hot.getDataAtRow(index+1))
+              Shiny.setInputValue(
+                elementId + '_aftercreaterow',
+                {
+                  index: hot.toPhysicalRow(index),
+                  amount: amount
+                }
+              )
+            }
+          );
 
+          hot.addHook(
+            'afterRemoveCol',
+            function(index, amount, physicalColumns) {
+
+              Shiny.setInputValue(
+                elementId + '_afterremovecol',
+                {
+                  index: index,
+                  amount: amount,
+                  physicalColumns: physicalColumns
+                }
+              )
             }
           );
 
@@ -70,13 +77,15 @@ HTMLWidgets.widget({
             'afterCreateCol',
             function(index, amount) {
 
-              console.log(index)
-              console.log(amount)
-
+              Shiny.setInputValue(
+                elementId + '_aftercreatecol',
+                {
+                  index: index,
+                  amount: amount
+                }
+              )
             }
           );
-
-
         },
         resize: function(width, height) {
         }

@@ -6,9 +6,9 @@
 \usage{
 hotwidget(
   data,
+  columns = NULL,
   width = NULL,
   height = NULL,
-  elementId = NULL,
   rowHeaders = FALSE,
   columnSorting = TRUE,
   autoWrapRow = TRUE,
@@ -16,7 +16,7 @@ hotwidget(
   filters = TRUE,
   dropdownMenu = TRUE,
   contextMenu = TRUE,
-  licenseKey = "non-commercial-and-evaluation"
+  licenseKey = NA
 )
 }
 \arguments{
@@ -25,8 +25,6 @@ hotwidget(
 \item{width}{Width of the widget}
 
 \item{height}{Height of the widget}
-
-\item{elementId}{Id of the widget}
 
 \item{rowHeaders}{Show row headers}
 

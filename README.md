@@ -6,7 +6,14 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of hotwidget is to …
+The goal of hotwidget is to provide an interface to the handsontable.js
+library. This is mainly intended to use with {Shiny}. The package is
+still in development and is not yet available on CRAN.
+
+The reason for this package is that rhandsontable is not being developed
+beyond version 0.3.8 due to the need for a license in the case of
+commercial use. However, if you have a license, you can use hotwidget
+for commercial use.
 
 ## Installation
 
@@ -18,35 +25,55 @@ You can install the development version of hotwidget from
 devtools::install_github("vreederene-90/hotwidget")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(hotwidget)
-## basic example code
+hotwidget(head(iris))
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+![](man/figures/example.png)
+
+### A basic Shiny app with hotwidget
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+library(hotwidget)
+run_app <- function() {
+  ui <- fluidPage(
+    hotwidgetOutput("hotwidget")
+  )
+
+  server <- function(input, output, session) {
+
+    hotwidget_data <-
+      iris |>
+      janitor::clean_names() |>
+      mutate(
+        .before = 1,
+        test = as_date(paste(Sys.Date()))
+      )
+
+    hotwidget_data_updated <- reactiveVal(hotwidget_data)
+
+    observe(
+      {
+        print("hotwidget_data_updated")
+        print(hotwidget_data_updated()|> head())
+      }
+    )
+
+    hotwidget_update(input, hotwidget_data, hotwidget_data_updated)
+
+    output$hotwidget <-
+      renderHotwidget(
+        hotwidget(
+          licenseKey = 'non-commercial-and-evaluation',
+          data = hotwidget_data
+        )
+      )
+  }
+  shinyApp(ui,server)
+}
 ```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
