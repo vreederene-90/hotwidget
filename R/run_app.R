@@ -1,4 +1,4 @@
-# Purely for debugging purposes
+# for debugging, test and possibly example purposes
 run_app <- function() {
   ui <- fluidPage(
     actionButton("browser","browser"),
@@ -6,6 +6,7 @@ run_app <- function() {
   )
 
   server <- function(input, output, session) {
+    if (getOption("shiny.testmode")) devtools::load_all()
 
     hotwidget_data <-
       iris |>
@@ -15,12 +16,14 @@ run_app <- function() {
         test = as_date(paste(Sys.Date()))
       )
 
+
     hotwidget_data_updated <- reactiveVal(hotwidget_data)
 
     observe(
       {
         print("hotwidget_data_updated")
-        print(hotwidget_data_updated()|> head())
+        print(hotwidget_data_updated()|> head() |>  tibble())
+        print(input$hotwidget_afterremoverow)
       }
     )
 
@@ -31,10 +34,12 @@ run_app <- function() {
         hotwidget(
           licenseKey = 'non-commercial-and-evaluation',
           data = hotwidget_data
+          # allowRemoveRow = F,
+          # allowInsertRow = F
         )
       )
 
-    observeEvent(input$browser, browser())
+
   }
   shinyApp(ui,server)
 }
