@@ -4,7 +4,6 @@
 ^\.Rproj\.user$
 ^app\.R$
 ^R/globals.R$
-^R/run_app.R$
 ^dev$
 ^LICENSE\.md$
 ^README\.Rmd$

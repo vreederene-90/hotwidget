@@ -33,8 +33,6 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
     if (!is.null(input$hotwidget_afterchange)) {
       print("afterchange")
 
-      # TODO: update met values JSON ipv object
-
       hotwidget_data_updated(
         hotwidget_data_updated() |>
           mutate(row = row_number(),.before = 1) |>
@@ -105,17 +103,7 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
   observe(
     if (!is.null(input$hotwidget_aftercreatecol)) {
       print("aftercreatecol")
-
       print(input$hotwidget_aftercreatecol)
-
-      # print(
-      #   LETTERS[input$hotwidget_aftercreatecol$index + 1]
-      # )
-
-      # hotwidget_data_updated(
-      #   hotwidget_data_updated() |>
-      #     tibble::add_column(!!LETTERS[input$hotwidget_aftercreatecol$index + 1] := NA, .after = input$hotwidget_aftercreatecol$index)
-      # )
     }
   ) |> bindEvent(input$hotwidget_aftercreatecol)
 

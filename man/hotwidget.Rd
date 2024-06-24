@@ -11,6 +11,8 @@ hotwidget(
   height = NULL,
   rowHeaders = FALSE,
   columnSorting = TRUE,
+  allowRemoveRow = TRUE,
+  allowInsertRow = TRUE,
   autoWrapRow = TRUE,
   autoWrapCol = TRUE,
   filters = TRUE,
