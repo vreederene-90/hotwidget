@@ -9,9 +9,10 @@ run_app <- function(
       janitor::clean_names() |>
       mutate(
         .before = 1,
-        test = as_date(paste(Sys.Date()))
-      )
-    ) {
+        test = as_date(paste(Sys.Date())),
+        index = row_number()
+      ) |> head(6)
+) {
   ui <- fluidPage(
     hotwidgetOutput("hotwidget")
   )
@@ -25,22 +26,18 @@ run_app <- function(
         print("hotwidget_data_updated")
         print(hotwidget_data_updated() |> head())
       }
-    ) |>
-      bindEvent(
-        input$hotwidget_afterchange, input$hotwidget_afterremoverow, input$hotwidget_aftercreaterow
-      )
+    )
 
     hotwidget_update(input, hotwidget_data, hotwidget_data_updated)
 
     output$hotwidget <-
       renderHotwidget(
         hotwidget(
+          rowHeaders = TRUE,
           licenseKey = 'non-commercial-and-evaluation',
           data = hotwidget_data
         )
       )
-
-
   }
   shinyApp(ui,server)
 }

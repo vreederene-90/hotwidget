@@ -20,7 +20,7 @@ HTMLWidgets.widget({
               console.log('afterchange source', source)
               console.log('afterchange changes', changes)
 
-              if (source == 'edit') {
+              if (["ContextMenu.clearColumn","edit"].includes(source)) {
                 Shiny.setInputValue(
                   elementId + '_afterchange',
                     {
@@ -105,15 +105,49 @@ HTMLWidgets.widget({
             'afterUndo',
             function(action) {
 
-              console.log('afterundo action', action)
+              // set different values based on the actionType
+              // insert_row, remove_row, edit
+              console.log(action)
+              console.log(hot.toPhysicalRow(action.index))
 
-              Shiny.setInputValue(
-                elementId + '_afterundo',
-                {
-                  action: action
-                }
-              )
-
+              switch(action.actionType) {
+                case 'change':
+                  Shiny.setInputValue(
+                    elementId + '_afterundo',
+                    {
+                      action: action.actionType,
+                      row: action.changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
+                      col: action.changes.map(x => x[1]),
+                      // we pick changes[3] for edit in afterChange, but for undo we pick changes[2]
+                      val: action.changes.map(x => x[2])
+                    }
+                  )
+                  break;
+                case 'insert_row':
+                  // its a reverse, so this is data needed for delete of a row
+                  Shiny.setInputValue(
+                    elementId + '_afterundo',
+                      {
+                        action: action.actionType,
+                        index: hot.toPhysicalRow(action.index),
+                        amount: action.amount
+                      }
+                  )
+                  break;
+                case 'remove_row':
+                  // its a reverse, so this is data needed for insert of a row
+                  Shiny.setInputValue(
+                  elementId + '_afterundo',
+                    {
+                      action: action.actionType,
+                      index: action.index,
+                      sequence: action.rowIndexesSequence,
+                      data: action.data,
+                      amount: action.amount
+                    }
+                  )
+                  break;
+              }
             }
           );
 
@@ -124,11 +158,11 @@ HTMLWidgets.widget({
               console.log('afterredo action', action)
 
               Shiny.setInputValue(
-                elementId + '_afterundo',
-                {
-                  action: action
-                }
-              )
+                  elementId + '_afterredo',
+                    {
+                      action: action
+                    }
+                  )
 
             }
           )

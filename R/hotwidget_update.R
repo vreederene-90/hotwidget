@@ -9,6 +9,8 @@
 #' - afterRemoveRow
 #' - afterCreateCol
 #' - afterRemoveCol
+#' - afterUndo
+#' - afterRedo
 #'
 #' Data types are inferred via the original data set. This leads to the
 #' following behaviour
@@ -106,5 +108,91 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
       print(input$hotwidget_aftercreatecol)
     }
   ) |> bindEvent(input$hotwidget_aftercreatecol)
+
+  observe(
+    if (!is.null(input$hotwidget_afterundo)) {
+      print(paste("undo", input$hotwidget_afterundo))
+
+      switch(
+        input$hotwidget_afterundo$action,
+        # undo change
+        "change" =
+          {
+            hotwidget_data_updated(
+              hotwidget_data_updated() |>
+                mutate(row = row_number(), .before = 1) |>
+                rows_update(
+                  pmap(
+                    list(
+                      row = input$hotwidget_afterundo$row,
+                      col = map(input$hotwidget_afterundo$col, ~names(hotwidget_data_updated())[.x + 1]),
+                      val = input$hotwidget_afterundo$val
+                    ),
+                    \(row, col, val) tibble(row = row + 1, col = col, val = if(is.null(val)) NA else val)) |>
+                    bind_rows() |>
+                    pivot_wider(names_from = col, values_from = val) |>
+                    mutate(
+                      across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
+                      across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
+                      across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
+                      across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+                      across(
+                        any_of(colnames(select(hotwidget_data, where(is.factor)))),
+                        ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                      )
+                    ),
+                  by = "row"
+                ) |> select(-row)
+            )
+          },
+        # undo removed row
+        "remove_row" = {
+          input$hotwidget_afterundo$action |> print()
+
+          row_to_insert <-
+            input$hotwidget_afterundo$data |>
+            unlist() |>
+            tibble::enframe() |>
+            pivot_wider() |>
+            mutate(
+              across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
+              across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
+              across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
+              across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+              across(
+                any_of(colnames(select(hotwidget_data, where(is.factor)))),
+                ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+              )
+            )
+
+          hotwidget_data_updated(
+            hotwidget_data_updated() |>
+              add_row(row_to_insert, .after = input$hotwidget_afterundo$index)
+          )
+
+        },
+        # undo created row
+        "insert_row" = {
+          input$hotwidget_afterundo$action |> print()
+          rows_to_remove <- input$hotwidget_afterundo$index |> map_int(~.x + 1)
+
+          hotwidget_data_updated(
+            hotwidget_data_updated() |>
+              slice(-rows_to_remove)
+          )
+
+        }
+      )
+
+    }
+  ) |> bindEvent(input$hotwidget_afterundo)
+
+  observe(
+    if (!is.null(input$hotwidget_afterredo)) {
+      print(paste("redo", input$hotwidget_afterredo))
+      browser()
+
+    }
+  ) |> bindEvent(input$hotwidget_afterredo)
 
 }
