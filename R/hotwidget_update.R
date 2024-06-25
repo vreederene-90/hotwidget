@@ -180,7 +180,6 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
             hotwidget_data_updated() |>
               slice(-rows_to_remove)
           )
-
         }
       )
 
@@ -190,8 +189,56 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
   observe(
     if (!is.null(input$hotwidget_afterredo)) {
       print(paste("redo", input$hotwidget_afterredo))
-      browser()
 
+      switch(
+        input$hotwidget_afterredo$action,
+        "change" = {
+          hotwidget_data_updated(
+            hotwidget_data_updated() |>
+              mutate(row = row_number(),.before = 1) |>
+              rows_update(
+                pmap(
+                  list(
+                    row = input$hotwidget_afterredo$row,
+                    col = map(input$hotwidget_afterredo$col, ~names(hotwidget_data_updated())[.x + 1]),
+                    val = input$hotwidget_afterredo$val
+                  ),
+                  \(row, col, val) tibble(row = row + 1, col = col, val = if(is.null(val)) NA else val)) |>
+                  bind_rows() |>
+                  pivot_wider(names_from = col, values_from = val) |>
+                  mutate(
+                    across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
+                    across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
+                    across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
+                    across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+                    across(
+                      any_of(colnames(select(hotwidget_data, where(is.factor)))),
+                      ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                    )
+                  ),
+                by = "row"
+              ) |> select(-row)
+          )
+        },
+        "insert_row" = {
+
+          hotwidget_data_updated(
+            hotwidget_data_updated() |>
+              add_row(
+                !!names(hotwidget_data_updated())[1] := NA, .after = input$hotwidget_afterredo$index
+              )
+          )
+        },
+        "remove_row" =
+          {
+            rows_to_remove <- input$hotwidget_afterredo$index |> map_int(~.x + 1)
+
+            hotwidget_data_updated(
+              hotwidget_data_updated() |>
+                slice(-rows_to_remove)
+            )
+          }
+      )
     }
   ) |> bindEvent(input$hotwidget_afterredo)
 

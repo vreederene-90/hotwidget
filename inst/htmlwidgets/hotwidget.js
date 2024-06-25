@@ -1,3 +1,5 @@
+// TODO: TRIGGER REFRESH WHEN VALUES ARE THE SAME (SHINY NEEDS IT)
+
 HTMLWidgets.widget({
 
   name: 'hotwidget',
@@ -13,17 +15,18 @@ HTMLWidgets.widget({
           const container = document.getElementById(elementId);
           const hot = new Handsontable(container, params);
 
+          n = 0
+
           hot.addHook(
             'afterChange',
             function(changes, source) {
-
-              console.log('afterchange source', source)
-              console.log('afterchange changes', changes)
+              n = n + 1
 
               if (["ContextMenu.clearColumn","edit"].includes(source)) {
                 Shiny.setInputValue(
                   elementId + '_afterchange',
                     {
+                      n: n,
                       row: changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
                       col: changes.map(x => x[1]),
                       val: changes.map(x => x[3])
@@ -36,12 +39,14 @@ HTMLWidgets.widget({
           hot.addHook(
             'afterRemoveRow',
             function(index, amount, physicalRows, source) {
-              console.log('afterremoverow source', source)
+
+              n = n + 1
 
               if (source == 'ContextMenu.removeRow') {
                 Shiny.setInputValue(
                   elementId + '_afterremoverow',
                     {
+                      n: n,
                       index: index,
                       amount: amount,
                       physicalRows: physicalRows
@@ -55,11 +60,13 @@ HTMLWidgets.widget({
             'afterCreateRow',
             function(index, amount, source) {
 
-            console.log('aftercreaterow source', source)
+            n = n + 1
+
             if (["ContextMenu.rowBelow","ContextMenu.rowAbove"].includes(source)) {
               Shiny.setInputValue(
                 elementId + '_aftercreaterow',
                   {
+                    n: n,
                     index: hot.toPhysicalRow(index),
                     amount: amount
                   }
@@ -72,11 +79,11 @@ HTMLWidgets.widget({
             'afterRemoveCol',
             function(index, amount, physicalColumns, source) {
 
-              console.log(source)
-
+              n = n + 1
               Shiny.setInputValue(
                 elementId + '_afterremovecol',
                 {
+                  n: n,
                   index: index,
                   amount: amount,
                   physicalColumns: physicalColumns
@@ -89,11 +96,12 @@ HTMLWidgets.widget({
             'afterCreateCol',
             function(index, amount, source) {
 
-              console.log(source)
+              n = n + 1
 
               Shiny.setInputValue(
                 elementId + '_aftercreatecol',
                 {
+                  n: n,
                   index: index,
                   amount: amount
                 }
@@ -107,14 +115,17 @@ HTMLWidgets.widget({
 
               // set different values based on the actionType
               // insert_row, remove_row, edit
-              console.log(action)
-              console.log(hot.toPhysicalRow(action.index))
+              console.log('afterundo', action)
+
+              console.log('count', n)
+              n = n + 1
 
               switch(action.actionType) {
                 case 'change':
                   Shiny.setInputValue(
                     elementId + '_afterundo',
                     {
+                      n: n,
                       action: action.actionType,
                       row: action.changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
                       col: action.changes.map(x => x[1]),
@@ -128,6 +139,7 @@ HTMLWidgets.widget({
                   Shiny.setInputValue(
                     elementId + '_afterundo',
                       {
+                        n: n,
                         action: action.actionType,
                         index: hot.toPhysicalRow(action.index),
                         amount: action.amount
@@ -139,6 +151,7 @@ HTMLWidgets.widget({
                   Shiny.setInputValue(
                   elementId + '_afterundo',
                     {
+                      n: n,
                       action: action.actionType,
                       index: action.index,
                       sequence: action.rowIndexesSequence,
@@ -157,13 +170,46 @@ HTMLWidgets.widget({
 
               console.log('afterredo action', action)
 
-              Shiny.setInputValue(
+              n = n + 1
+
+              switch(action.actionType) {
+                case 'change':
+                  Shiny.setInputValue(
+                    elementId + '_afterredo',
+                      {
+                        n: n,
+                        action: action.actionType,
+                        row: action.changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
+                        col: action.changes.map(x => x[1]),
+                        val: action.changes.map(x => x[3])
+                      }
+                  )
+                  break;
+                case 'insert_row':
+                  Shiny.setInputValue(
                   elementId + '_afterredo',
                     {
-                      action: action
+                      n: n,
+                      action: action.actionType,
+                      index: hot.toPhysicalRow(action.index),
+                      amount: action.amount
                     }
+                )
+                  break;
+                case 'remove_row':
+                  Shiny.setInputValue(
+                    elementId + '_afterredo',
+                      {
+                        n: n,
+                        actionlist: action,
+                        action: action.actionType,
+                        index: action.index,
+                        amount: action.amount,
+                        physicalRows: action.physicalRows
+                      }
                   )
-
+                  break;
+              }
             }
           )
 
