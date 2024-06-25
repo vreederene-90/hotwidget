@@ -1,4 +1,5 @@
-// TODO: TRIGGER REFRESH WHEN VALUES ARE THE SAME (SHINY NEEDS IT)
+// TODO: multiple row delete crashes app
+// undo/redo after sorting misses rows or updates wrongly, why
 
 HTMLWidgets.widget({
 
@@ -22,7 +23,9 @@ HTMLWidgets.widget({
             function(changes, source) {
               n = n + 1
 
-              if (["ContextMenu.clearColumn","edit"].includes(source)) {
+              console.log(source)
+
+              if (["ContextMenu.clearColumn","edit","Autofill.fill"].includes(source)) {
                 Shiny.setInputValue(
                   elementId + '_afterchange',
                     {
@@ -153,7 +156,7 @@ HTMLWidgets.widget({
                     {
                       n: n,
                       action: action.actionType,
-                      index: action.index,
+                      index: hot.toPhysicalRow(action.index),
                       sequence: action.rowIndexesSequence,
                       data: action.data,
                       amount: action.amount
