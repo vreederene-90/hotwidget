@@ -1,5 +1,3 @@
-// TODO: TRIGGER REFRESH WHEN VALUES ARE THE SAME (SHINY NEEDS IT)
-
 HTMLWidgets.widget({
 
   name: 'hotwidget',
@@ -22,7 +20,7 @@ HTMLWidgets.widget({
             function(changes, source) {
               n = n + 1
 
-              if (["ContextMenu.clearColumn","edit"].includes(source)) {
+              if (["ContextMenu.clearColumn","edit","Autofill.fill"].includes(source)) {
                 Shiny.setInputValue(
                   elementId + '_afterchange',
                     {
@@ -41,6 +39,9 @@ HTMLWidgets.widget({
             function(index, amount, physicalRows, source) {
 
               n = n + 1
+              console.log('index',index)
+              console.log('amount',amount)
+              console.log('physicalrows',physicalRows)
 
               if (source == 'ContextMenu.removeRow') {
                 Shiny.setInputValue(

@@ -5,8 +5,8 @@
 \title{Test app for debugging, test and possibly example purposes}
 \usage{
 run_app(
-  hotwidget_data = mutate(janitor::clean_names(iris), .before = 1, test =
-    as_date(paste(Sys.Date())))
+  hotwidget_data = head(mutate(janitor::clean_names(iris), .before = 1, index =
+    row_number(), test = as_date(paste(Sys.Date()))), 6)
 )
 }
 \arguments{

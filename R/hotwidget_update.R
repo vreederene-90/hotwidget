@@ -1,3 +1,8 @@
+# TODO: combinatie redo undo gaat nog neit goed, weet neit waarom
+# krijg een product aan rijen op een of andere manier
+# heeft iets met multiple row delete te maken
+#'
+#'
 #' hotwidget_update
 #'
 #' @description
@@ -15,7 +20,7 @@
 #' Data types are inferred via the original data set. This leads to the
 #' following behaviour
 #' - non-numerics in numeric columns become NA
-#' - invalid dates are NOT updated
+#' - invalid dates are become NA
 #' - factors where the value is not in the levels become NA
 #'
 #' @param input the list of input from the server function
@@ -52,7 +57,10 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
                 across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
                 across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
                 across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
-                across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+                across(
+                  any_of(colnames(select(hotwidget_data, where(is.Date)))),
+                  ~tryCatch(as_date(pick(cur_column())), error = function(e) NA_Date_)
+                ),
                 across(
                   any_of(colnames(select(hotwidget_data, where(is.factor)))),
                   ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
@@ -147,13 +155,11 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
           },
         # undo removed row
         "remove_row" = {
-          input$hotwidget_afterundo$action |> print()
 
           row_to_insert <-
             input$hotwidget_afterundo$data |>
-            unlist() |>
-            tibble::enframe() |>
-            pivot_wider() |>
+            map(~tibble::enframe(unlist(.x)) |> pivot_wider()) |>
+            bind_rows() |>
             mutate(
               across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
               across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
@@ -164,6 +170,7 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
                 ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
               )
             )
+
 
           hotwidget_data_updated(
             hotwidget_data_updated() |>
@@ -210,7 +217,10 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
                     across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
                     across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
                     across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
-                    across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+                    across(
+                      any_of(colnames(select(hotwidget_data, where(is.Date)))),
+                      ~tryCatch(as_date(pick(cur_column())), error = function(e) NA_Date_)
+                    ),
                     across(
                       any_of(colnames(select(hotwidget_data, where(is.factor)))),
                       ~factor(., levels = levels(hotwidget_data[[cur_column()]]))

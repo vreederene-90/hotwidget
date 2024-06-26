@@ -29,13 +29,15 @@ hooks in the handsontable.js library.
 \item afterRemoveRow
 \item afterCreateCol
 \item afterRemoveCol
+\item afterUndo
+\item afterRedo
 }
 
 Data types are inferred via the original data set. This leads to the
 following behaviour
 \itemize{
 \item non-numerics in numeric columns become NA
-\item invalid dates are NOT updated
+\item invalid dates are become NA
 \item factors where the value is not in the levels become NA
 }
 }
