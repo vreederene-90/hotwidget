@@ -1,8 +1,6 @@
 // TODO: multiple row delete crashes app
 // undo/redo after sorting misses rows or updates wrongly, why
 
-HTMLWidgets.widget({
-
   name: 'hotwidget',
 
   type: 'output',
@@ -23,8 +21,6 @@ HTMLWidgets.widget({
             function(changes, source) {
               n = n + 1
 
-              console.log(source)
-
               if (["ContextMenu.clearColumn","edit","Autofill.fill"].includes(source)) {
                 Shiny.setInputValue(
                   elementId + '_afterchange',
@@ -44,6 +40,9 @@ HTMLWidgets.widget({
             function(index, amount, physicalRows, source) {
 
               n = n + 1
+              console.log('index',index)
+              console.log('amount',amount)
+              console.log('physicalrows',physicalRows)
 
               if (source == 'ContextMenu.removeRow') {
                 Shiny.setInputValue(
