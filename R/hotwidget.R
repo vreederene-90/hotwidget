@@ -87,7 +87,7 @@ hotwidget <- function(
           ),
           source = switch(
             x,
-            factor = unique(data[[idx]]),
+            factor = levels(data[[idx]]),
             NA
           ),
           numericFormat = switch(
