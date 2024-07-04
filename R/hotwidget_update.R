@@ -23,6 +23,7 @@
 #' - factors where the value is not in the levels become NA
 #'
 #' known issues:
+#' \href{https://github.com/handsontable/handsontable/issues/10610}{GitHub issue}
 #' - combination of sorting and undo/redo doesnt function properly.
 #' - hotwidget disables undo/redo if you want column sorting
 #'

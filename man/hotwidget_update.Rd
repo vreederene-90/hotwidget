@@ -42,6 +42,7 @@ following behaviour
 }
 
 known issues:
+\href{https://github.com/handsontable/handsontable/issues/10610}{GitHub issue}
 \itemize{
 \item combination of sorting and undo/redo doesnt function properly.
 \item hotwidget disables undo/redo if you want column sorting
