@@ -4,25 +4,48 @@
 #' @param width Width of the widget
 #' @param height Height of the widget
 #' @param rowHeaders Show row headers
-#' @param colHeaders Show column headers
-#' @param columnSorting Enable column sorting
+#' @param columnSorting Enable column sorting (if you enable this, undo/redo functionality is disabled)
 #' @param autoWrapRow Enable auto wrap for rows
 #' @param autoWrapCol Enable auto wrap for columns
 #' @param filters Enable filters
 #' @param dropdownMenu Enable dropdown menu
 #' @param contextMenu Enable context menu
 #' @param licenseKey License key
+#' @param columns Column definition, if not assigned will be guessed
+#' e.g.:
+#' \preformatted{
+#' list(
+#'   list(
+#'     data = "{column_name}",
+#'     type = "data type",
+#'     source = c("choices", "for", "dropdown"),
+#'     numericFormat = list(
+#'       pattern = "0.00"
+#'     ),
+#'     dateFormat = "YYYY-MM-DD"
+#'   ),
+#'   list(...)
+#' )
+#' }
+#' More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-type/}{Documentation Handsontable.js}
+#'
+#' @param allowRemoveRow Allow the removal of rows
+#' @param allowInsertRow Allow row inserting
 #'
 #' @import htmlwidgets
+#' @description
+#' known issues:
+#' - combination of sorting and undo/redo doesnt function properly.
+#' - hotwidget disables undo/redo if you want column sorting
 #'
 #' @export
 hotwidget <- function(
     data,
     columns = NULL,
-    # columns_data_types = TRUE,
     width = NULL,
     height = NULL,
     rowHeaders = FALSE,
+    undo = TRUE,
     columnSorting = TRUE,
     allowRemoveRow = TRUE,
     allowInsertRow = TRUE,
@@ -51,10 +74,7 @@ hotwidget <- function(
   # numeric
   # text
 
-  if (
-    # is.null(columns) & columns_data_types
-    is.null(columns)
-  )
+  if (is.null(columns))
     columns <- imap(
       col_types,
       \(x, idx) {
@@ -71,7 +91,7 @@ hotwidget <- function(
           ),
           source = switch(
             x,
-            factor = unique(data[[idx]]),
+            factor = levels(data[[idx]]),
             NA
           ),
           numericFormat = switch(
@@ -95,13 +115,11 @@ hotwidget <- function(
       data,
       na = "null",
       dataframe =
-        # if (columns_data_types) "rows" else "values",
         "rows",
       digits = NA
       ),
     columns = columns,
-      # if(columns_data_types) columns else NULL,
-    undo = TRUE,
+    undo = if(columnSorting) FALSE else undo,
     allowRemoveRow = allowRemoveRow,
     allowInsertRow = allowInsertRow,
     # allowRemoveColumn = allowRemoveColumn,

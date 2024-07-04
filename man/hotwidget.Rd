@@ -10,6 +10,7 @@ hotwidget(
   width = NULL,
   height = NULL,
   rowHeaders = FALSE,
+  undo = TRUE,
   columnSorting = TRUE,
   allowRemoveRow = TRUE,
   allowInsertRow = TRUE,
@@ -24,13 +25,35 @@ hotwidget(
 \arguments{
 \item{data}{A data frame or matrix}
 
+\item{columns}{Column definition, if not assigned will be guessed
+e.g.:
+\preformatted{
+list(
+  list(
+    data = "{column_name}",
+    type = "data type",
+    source = c("choices", "for", "dropdown"),
+    numericFormat = list(
+      pattern = "0.00"
+    ),
+    dateFormat = "YYYY-MM-DD"
+  ),
+  list(...)
+)
+}
+More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-type/}{Documentation Handsontable.js}}
+
 \item{width}{Width of the widget}
 
 \item{height}{Height of the widget}
 
 \item{rowHeaders}{Show row headers}
 
-\item{columnSorting}{Enable column sorting}
+\item{columnSorting}{Enable column sorting (if you enable this, undo/redo functionality is disabled)}
+
+\item{allowRemoveRow}{Allow the removal of rows}
+
+\item{allowInsertRow}{Allow row inserting}
 
 \item{autoWrapRow}{Enable auto wrap for rows}
 
@@ -43,9 +66,11 @@ hotwidget(
 \item{contextMenu}{Enable context menu}
 
 \item{licenseKey}{License key}
-
-\item{colHeaders}{Show column headers}
 }
 \description{
-hotwidget: Handsontable widget for R
+known issues:
+\itemize{
+\item combination of sorting and undo/redo doesnt function properly.
+\item hotwidget disables undo/redo if you want column sorting
+}
 }

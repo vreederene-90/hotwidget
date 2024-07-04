@@ -29,13 +29,22 @@ hooks in the handsontable.js library.
 \item afterRemoveRow
 \item afterCreateCol
 \item afterRemoveCol
+\item afterUndo
+\item afterRedo
 }
 
 Data types are inferred via the original data set. This leads to the
 following behaviour
 \itemize{
 \item non-numerics in numeric columns become NA
-\item invalid dates are NOT updated
+\item invalid dates are become NA
 \item factors where the value is not in the levels become NA
+}
+
+known issues:
+\href{https://github.com/handsontable/handsontable/issues/10610}{GitHub issue}
+\itemize{
+\item combination of sorting and undo/redo doesnt function properly.
+\item hotwidget disables undo/redo if you want column sorting
 }
 }
