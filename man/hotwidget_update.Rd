@@ -40,4 +40,10 @@ following behaviour
 \item invalid dates are become NA
 \item factors where the value is not in the levels become NA
 }
+
+known issues:
+\itemize{
+\item combination of sorting and undo/redo doesnt function properly.
+\item hotwidget disables undo/redo if you want column sorting
+}
 }

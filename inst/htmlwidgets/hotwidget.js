@@ -1,6 +1,4 @@
-// TODO: multiple row delete crashes app
-// undo/redo after sorting misses rows or updates wrongly, why
-
+HTMLWidgets.widget({
   name: 'hotwidget',
 
   type: 'output',
@@ -203,11 +201,8 @@
                     elementId + '_afterredo',
                       {
                         n: n,
-                        actionlist: action,
                         action: action.actionType,
-                        index: action.index,
-                        amount: action.amount,
-                        physicalRows: action.physicalRows
+                        actionList: action
                       }
                   )
                   break;

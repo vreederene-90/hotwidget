@@ -1,8 +1,7 @@
-# TODO: combinatie redo undo gaat nog neit goed, weet neit waarom
-# krijg een product aan rijen op een of andere manier
-# heeft iets met multiple row delete te maken
-#'
-#'
+# things to watch for
+# NULL values need to be casted to NA
+
+# ----------------------------------------------------------------------------
 #' hotwidget_update
 #'
 #' @description
@@ -22,6 +21,10 @@
 #' - non-numerics in numeric columns become NA
 #' - invalid dates are become NA
 #' - factors where the value is not in the levels become NA
+#'
+#' known issues:
+#' - combination of sorting and undo/redo doesnt function properly.
+#' - hotwidget disables undo/redo if you want column sorting
 #'
 #' @param input the list of input from the server function
 #' @param hotwidget_data the originally initiated data set
@@ -99,33 +102,14 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
   ) |> bindEvent(input$hotwidget_aftercreaterow)
 
   observe(
-    if (!is.null(input$hotwidget_afterremovecol)) {
-
-      cols_to_remove <- input$hotwidget_afterremovecol$physicalColumns |> map_int(~.x + 1)
-      hotwidget_data_updated(
-        hotwidget_data_updated() |>
-          select(-all_of(cols_to_remove))
-      )
-
-    }
-  ) |> bindEvent(input$hotwidget_afterremovecol)
-
-  observe(
-    if (!is.null(input$hotwidget_aftercreatecol)) {
-      print("aftercreatecol")
-      print(input$hotwidget_aftercreatecol)
-    }
-  ) |> bindEvent(input$hotwidget_aftercreatecol)
-
-  observe(
     if (!is.null(input$hotwidget_afterundo)) {
-      print(paste("undo", input$hotwidget_afterundo))
 
       switch(
         input$hotwidget_afterundo$action,
         # undo change
         "change" =
           {
+            print("undochange")
             hotwidget_data_updated(
               hotwidget_data_updated() |>
                 mutate(row = row_number(), .before = 1) |>
@@ -155,11 +139,13 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
           },
         # undo removed row
         "remove_row" = {
+          print("undoremoverow")
+
+          data <- do.call(rbind, lapply(input$hotwidget_afterundo$data, rbind))
+          data[sapply(data, is.null)] <- NA
 
           row_to_insert <-
-            input$hotwidget_afterundo$data |>
-            map(~tibble::enframe(unlist(.x)) |> pivot_wider()) |>
-            bind_rows() |>
+            data |> as_tibble() |> unnest(cols = c(index, test, sepal_length, sepal_width, petal_length, petal_width, species)) |>
             mutate(
               across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
               across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
@@ -171,7 +157,6 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
               )
             )
 
-
           hotwidget_data_updated(
             hotwidget_data_updated() |>
               add_row(row_to_insert, .after = input$hotwidget_afterundo$index)
@@ -180,7 +165,7 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
         },
         # undo created row
         "insert_row" = {
-          input$hotwidget_afterundo$action |> print()
+          print("undoinsertrow")
           rows_to_remove <- input$hotwidget_afterundo$index |> map_int(~.x + 1)
 
           hotwidget_data_updated(
@@ -195,11 +180,11 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
 
   observe(
     if (!is.null(input$hotwidget_afterredo)) {
-      print(paste("redo", input$hotwidget_afterredo))
 
       switch(
         input$hotwidget_afterredo$action,
         "change" = {
+          print("redochange")
           hotwidget_data_updated(
             hotwidget_data_updated() |>
               mutate(row = row_number(),.before = 1) |>
@@ -232,6 +217,7 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
         },
         "insert_row" = {
 
+          print('redoinsertrow')
           hotwidget_data_updated(
             hotwidget_data_updated() |>
               add_row(
@@ -241,7 +227,12 @@ hotwidget_update <- function(input, hotwidget_data, hotwidget_data_updated) {
         },
         "remove_row" =
           {
-            rows_to_remove <- input$hotwidget_afterredo$index |> map_int(~.x + 1)
+
+            print('redoremoverrow')
+
+            index <- input$hotwidget_afterredo$actionList$index + 1
+            amount <- length(input$hotwidget_afterredo$actionList$data)
+            rows_to_remove <- index:{index+amount-1}
 
             hotwidget_data_updated(
               hotwidget_data_updated() |>

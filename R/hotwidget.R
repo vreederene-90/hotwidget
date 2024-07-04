@@ -33,6 +33,10 @@
 #' @param allowInsertRow Allow row inserting
 #'
 #' @import htmlwidgets
+#' @description
+#' known issues:
+#' - combination of sorting and undo/redo doesnt function properly.
+#' - hotwidget disables undo/redo if you want column sorting
 #'
 #' @export
 hotwidget <- function(

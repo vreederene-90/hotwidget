@@ -10,6 +10,7 @@ hotwidget(
   width = NULL,
   height = NULL,
   rowHeaders = FALSE,
+  undo = TRUE,
   columnSorting = TRUE,
   allowRemoveRow = TRUE,
   allowInsertRow = TRUE,
@@ -67,5 +68,9 @@ More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-t
 \item{licenseKey}{License key}
 }
 \description{
-hotwidget: Handsontable widget for R
+known issues:
+\itemize{
+\item combination of sorting and undo/redo doesnt function properly.
+\item hotwidget disables undo/redo if you want column sorting
+}
 }
