@@ -41,13 +41,14 @@ run_app <-
 
     server <- function(input, output, session) {
 
-      hotwidget_update(input, hotwidget_data, hotwidget_data_updated)
+      hotwidget_update(input, "hotwidget", hotwidget_data, hotwidget_data_updated)
       hotwidget_data_updated <- reactiveVal(hotwidget_data)
 
       output$hotwidget <-
         renderHotwidget(
           hotwidget(
-            columnSorting = TRUE,
+            columnSorting = FALSE,
+            undo = TRUE,
             rowHeaders = TRUE,
             licenseKey = 'non-commercial-and-evaluation',
             data = hotwidget_data
