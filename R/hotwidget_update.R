@@ -1,3 +1,7 @@
+# TODO: use only one object instead of 2 for data (only 1 reactive is enough?)
+# also helps with being able to dynamically select columns because it is possible
+# to pass a reactive value to hotwidget()
+
 # things to watch for
 # NULL values need to be casted to NA
 
@@ -28,7 +32,6 @@
 #' - hotwidget disables undo/redo if you want column sorting
 #'
 #' @param input the list of input from the server function
-#' @param hotwidget_data the originally initiated data set
 #' @param hotwidget_data_updated a reactiveVal(), initiated with the original
 #' data set. This object will contain the data which has been updated by the
 #' user.
@@ -43,7 +46,6 @@
 hotwidget_update <- function(
     input,
     id,
-    hotwidget_data,
     hotwidget_data_updated,
     verbose = FALSE) {
 
@@ -71,13 +73,13 @@ hotwidget_update <- function(
               bind_rows() |>
               pivot_wider(names_from = col, values_from = val) |>
               mutate(
-                across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
-                across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
-                across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
-                across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as_date),
+                across(any_of(colnames(select(hotwidget_data_updated(), where(is.numeric)))), as.numeric),
+                across(any_of(colnames(select(hotwidget_data_updated(), where(is.character)))), as.character),
+                across(any_of(colnames(select(hotwidget_data_updated(), where(is.logical)))), as.logical),
+                across(any_of(colnames(select(hotwidget_data_updated(), where(is.Date)))), as_date),
                 across(
-                  any_of(colnames(select(hotwidget_data, where(is.factor)))),
-                  ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                  any_of(colnames(select(hotwidget_data_updated(), where(is.factor)))),
+                  ~factor(., levels = levels(hotwidget_data_updated()[[cur_column()]]))
                 )
               ),
             by = "row"
@@ -135,13 +137,13 @@ hotwidget_update <- function(
                     bind_rows() |>
                     pivot_wider(names_from = col, values_from = val) |>
                     mutate(
-                      across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
-                      across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
-                      across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
-                      across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+                      across(any_of(colnames(select(hotwidget_data_updated(), where(is.numeric)))), as.numeric),
+                      across(any_of(colnames(select(hotwidget_data_updated(), where(is.character)))), as.character),
+                      across(any_of(colnames(select(hotwidget_data_updated(), where(is.logical)))), as.logical),
+                      across(any_of(colnames(select(hotwidget_data_updated(), where(is.Date)))), as.Date),
                       across(
-                        any_of(colnames(select(hotwidget_data, where(is.factor)))),
-                        ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                        any_of(colnames(select(hotwidget_data_updated(), where(is.factor)))),
+                        ~factor(., levels = levels(hotwidget_data_updated()[[cur_column()]]))
                       )
                     ),
                   by = "row"
@@ -158,13 +160,13 @@ hotwidget_update <- function(
           row_to_insert <-
             data |> as_tibble() |> unnest(cols = c(index, test, sepal_length, sepal_width, petal_length, petal_width, species)) |>
             mutate(
-              across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
-              across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
-              across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
-              across(any_of(colnames(select(hotwidget_data, where(is.Date)))), as.Date),
+              across(any_of(colnames(select(hotwidget_data_updated(), where(is.numeric)))), as.numeric),
+              across(any_of(colnames(select(hotwidget_data_updated(), where(is.character)))), as.character),
+              across(any_of(colnames(select(hotwidget_data_updated(), where(is.logical)))), as.logical),
+              across(any_of(colnames(select(hotwidget_data_updated(), where(is.Date)))), as.Date),
               across(
-                any_of(colnames(select(hotwidget_data, where(is.factor)))),
-                ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                any_of(colnames(select(hotwidget_data_updated(), where(is.factor)))),
+                ~factor(., levels = levels(hotwidget_data_updated()[[cur_column()]]))
               )
             )
 
@@ -210,16 +212,16 @@ hotwidget_update <- function(
                   bind_rows() |>
                   pivot_wider(names_from = col, values_from = val) |>
                   mutate(
-                    across(any_of(colnames(select(hotwidget_data, where(is.numeric)))), as.numeric),
-                    across(any_of(colnames(select(hotwidget_data, where(is.character)))), as.character),
-                    across(any_of(colnames(select(hotwidget_data, where(is.logical)))), as.logical),
+                    across(any_of(colnames(select(hotwidget_data_updated(), where(is.numeric)))), as.numeric),
+                    across(any_of(colnames(select(hotwidget_data_updated(), where(is.character)))), as.character),
+                    across(any_of(colnames(select(hotwidget_data_updated(), where(is.logical)))), as.logical),
                     across(
-                      any_of(colnames(select(hotwidget_data, where(is.Date)))),
+                      any_of(colnames(select(hotwidget_data_updated(), where(is.Date)))),
                       ~tryCatch(as_date(pick(cur_column())), error = function(e) NA_Date_)
                     ),
                     across(
-                      any_of(colnames(select(hotwidget_data, where(is.factor)))),
-                      ~factor(., levels = levels(hotwidget_data[[cur_column()]]))
+                      any_of(colnames(select(hotwidget_data_updated(), where(is.factor)))),
+                      ~factor(., levels = levels(hotwidget_data_updated()[[cur_column()]]))
                     )
                   ),
                 by = "row"

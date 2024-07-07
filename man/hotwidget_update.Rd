@@ -4,16 +4,18 @@
 \alias{hotwidget_update}
 \title{hotwidget_update}
 \usage{
-hotwidget_update(input, hotwidget_data, hotwidget_data_updated)
+hotwidget_update(input, id, hotwidget_data_updated, verbose = FALSE)
 }
 \arguments{
 \item{input}{the list of input from the server function}
 
-\item{hotwidget_data}{the originally initiated data set}
+\item{id}{the id of the hotwidget}
 
 \item{hotwidget_data_updated}{a reactiveVal(), initiated with the original
 data set. This object will contain the data which has been updated by the
 user.}
+
+\item{verbose}{logical, if TRUE print debug messages}
 }
 \value{
 Doesnt return anything, but as a side effect updates

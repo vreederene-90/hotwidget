@@ -2,7 +2,6 @@
 #' @param hotwidget_data data set
 #'
 #' @return app
-#' @export run_app
 run_app <-
   function(
     hotwidget_data =
@@ -19,7 +18,14 @@ run_app <-
         column(
           width = 6,
           textInput("name", "name dataset", value = "dataset"),
-          hotwidgetOutput("hotwidget")
+          hotwidgetOutput("hotwidget"),
+          selectInput(
+            "select",
+            multiple = T,
+            choices = c("species", "sepal_length", "sepal_width", "petal_length", "petal_width", "index", "test"),
+            label = "select",
+            selected = "species"
+          )
         ),
         column(
           width = 6,
@@ -41,31 +47,38 @@ run_app <-
 
     server <- function(input, output, session) {
 
-      hotwidget_update(input, "hotwidget", hotwidget_data, hotwidget_data_updated)
-      hotwidget_data_updated <- reactiveVal(hotwidget_data)
+      hotwidget_update(input, "hotwidget", hotwidget_data_rv, verbose = TRUE)
+
+      hotwidget_data_rv <- reactiveVal()
+
+      observe(
+        hotwidget_data_rv(hotwidget_data |> select(any_of(input$select)))
+      )
 
       output$hotwidget <-
         renderHotwidget(
-          hotwidget(
-            columnSorting = FALSE,
-            undo = TRUE,
-            rowHeaders = TRUE,
-            licenseKey = 'non-commercial-and-evaluation',
-            data = hotwidget_data
-          )
-        )
+          {
+            hotwidget(
+              columnSorting = FALSE,
+              undo = TRUE,
+              rowHeaders = TRUE,
+              licenseKey = 'non-commercial-and-evaluation',
+              data = isolate(hotwidget_data_rv())
+            )
+          }
+        ) |> bindEvent(input$select)
 
       output$undo <- renderPrint(input$hotwidget_afterundo)
       output$redo <- renderPrint(input$hotwidget_afterredo)
 
-      output$table <- renderPrint(hotwidget_data_updated())
+      output$table <- renderPrint(hotwidget_data_rv())
 
       session$onSessionEnded(
         function() {
 
             assign(
               x = isolate(input$name),
-              value = isolate(hotwidget_data_updated()),
+              value = isolate(hotwidget_data_rv()),
               envir = .GlobalEnv
             )
           }
