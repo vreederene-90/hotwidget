@@ -15,6 +15,30 @@ beyond version 0.3.8 due to the need for a license in the case of
 commercial use. However, if you have a license, you can use hotwidget
 for commercial use.
 
+I’ve tried to send as little data from client to server in order to
+handle larger data sets. The function `hotwidget_update()` can be used
+to update the data that you insert into `hotwidget()`. You do need to
+pass a reactive object though.
+
+If you would like to independently handle the changes in the client, you
+can listen to the various ported hooks from handsontable.js.
+
+- afterChange
+- afterCreateRow
+- afterRemoveRow
+- afterUndo
+- afterRedo
+
+Column adding/removing is not implemented yet.
+
+The listeners update when triggered (so they are NULL at initialization)
+and can be accessed via `input${name_of_widget}_afterchange` for
+example. I would suggest you use these hooks if you want to use R to
+communicate database updates.
+
+For a more detailed description, take a look at
+`inst/htmlwidgets/hotwidget.js`.
+
 ## Installation
 
 You can install the development version of hotwidget from

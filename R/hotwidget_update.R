@@ -1,11 +1,3 @@
-# TODO: use only one object instead of 2 for data (only 1 reactive is enough?)
-# also helps with being able to dynamically select columns because it is possible
-# to pass a reactive value to hotwidget()
-
-# things to watch for
-# NULL values need to be casted to NA
-
-# ----------------------------------------------------------------------------
 #' hotwidget_update
 #'
 #' @description

@@ -63,7 +63,7 @@ run_app <-
               undo = TRUE,
               rowHeaders = TRUE,
               licenseKey = 'non-commercial-and-evaluation',
-              data = isolate(hotwidget_data_rv())
+              data = hotwidget_data_rv()
             )
           }
         ) |> bindEvent(input$select)
