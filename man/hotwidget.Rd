@@ -6,6 +6,7 @@
 \usage{
 hotwidget(
   data,
+  key_column = NULL,
   columns = NULL,
   width = NULL,
   height = NULL,
@@ -24,6 +25,8 @@ hotwidget(
 }
 \arguments{
 \item{data}{A data frame or matrix}
+
+\item{key_column}{Key column to identify rows (has to be integer), client will be updated with max + 1 for new rows}
 
 \item{columns}{Column definition, if not assigned will be guessed
 e.g.:
@@ -48,6 +51,8 @@ More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-t
 \item{height}{Height of the widget}
 
 \item{rowHeaders}{Show row headers}
+
+\item{undo}{Enable undo/redo functionality, if columnSorting is enabled, undo/redo is disabled}
 
 \item{columnSorting}{Enable column sorting (if you enable this, undo/redo functionality is disabled)}
 

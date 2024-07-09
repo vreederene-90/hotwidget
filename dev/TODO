@@ -1,0 +1,6 @@
+kolom hiden in geval van key_column e.g.,
+hiddenColumns = list(columns = list(0)),
+
+in case of create row and key_column, update serverside object via hotwidget_update()
+
+get key_column data for undo/redo
