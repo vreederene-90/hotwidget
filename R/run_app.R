@@ -59,7 +59,7 @@ run_app <-
 
     server <- function(input, output, session) {
 
-      hotwidget_update(input, "hotwidget", hotwidget_data_rv, verbose = TRUE)
+      # hotwidget_update(input, "hotwidget", hotwidget_data_rv, verbose = TRUE)
 
       hotwidget_data_rv <- reactiveVal()
 

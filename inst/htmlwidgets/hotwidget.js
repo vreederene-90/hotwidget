@@ -208,7 +208,6 @@ HTMLWidgets.widget({
                     n: n,
                     action: action.actionType,
                     index: hot.toPhysicalRow(action.index),
-                    sequence: action.rowIndexesSequence,
                     data: action.data,
                     amount: action.amount
                   }
@@ -262,7 +261,7 @@ HTMLWidgets.widget({
                   {
                     n: n,
                     action: action.actionType,
-                    actionList: action,
+                    data: action.data,
                     key_name: params.key_column
                   }
                 )
