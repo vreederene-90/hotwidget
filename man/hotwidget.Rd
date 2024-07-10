@@ -20,7 +20,8 @@ hotwidget(
   filters = TRUE,
   dropdownMenu = TRUE,
   contextMenu = TRUE,
-  licenseKey = NA
+  licenseKey = NA,
+  ...
 )
 }
 \arguments{
@@ -71,6 +72,8 @@ More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-t
 \item{contextMenu}{Enable context menu}
 
 \item{licenseKey}{License key}
+
+\item{...}{}
 }
 \description{
 known issues:

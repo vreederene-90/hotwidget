@@ -77,6 +77,11 @@ run_app <-
               rowHeaders = TRUE,
               licenseKey = 'non-commercial-and-evaluation',
               data = hotwidget_data_rv()
+              # hiddenColumns =
+              #   list(
+              #     indicators = TRUE,
+              #     columns = list(0)
+              #   )
             )
           }
         ) |> bindEvent(input$select)
