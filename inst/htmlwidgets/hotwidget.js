@@ -182,7 +182,7 @@ HTMLWidgets.widget({
                     key: key,
                     key_name: params.key_column,
                     row: action.changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
-                    col: action.changes.map(x => x[1]),
+                    col: action.changes.map(x => x[1]).map(x => hot.getColHeader(x)),
                     // we pick changes[3] for edit in afterChange, but for undo we pick changes[2]
                     val: action.changes.map(x => x[2])
                   }
