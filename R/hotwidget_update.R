@@ -33,8 +33,6 @@
 #' @return Doesnt return anything, but as a side effect updates
 #' hotwidget_data_updated.
 #'
-#' @export
-#'
 hotwidget_update <- function(
     input,
     id,

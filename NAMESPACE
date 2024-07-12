@@ -2,7 +2,6 @@
 
 export(hotwidget)
 export(hotwidgetOutput)
-export(hotwidget_update)
 export(renderHotwidget)
 import(dplyr)
 import(htmlwidgets)

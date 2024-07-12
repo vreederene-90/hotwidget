@@ -8,6 +8,7 @@ hotwidget(
   data,
   key_column = NULL,
   columns = NULL,
+  hiddenColumns = list(),
   width = NULL,
   height = NULL,
   rowHeaders = FALSE,
@@ -47,6 +48,8 @@ list(
 }
 More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-type/}{Documentation Handsontable.js}}
 
+\item{hiddenColumns}{Default is enabled, to specify use list(columns = list(0,1,2), indicators = TRUE, copyPasteEnabled = FALSE)}
+
 \item{width}{Width of the widget}
 
 \item{height}{Height of the widget}
@@ -72,8 +75,6 @@ More details at: \href{https://handsontable.com/docs/javascript-data-grid/cell-t
 \item{contextMenu}{Enable context menu}
 
 \item{licenseKey}{License key}
-
-\item{...}{}
 }
 \description{
 known issues:

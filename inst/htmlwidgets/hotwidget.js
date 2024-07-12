@@ -72,6 +72,7 @@ HTMLWidgets.widget({
                   Shiny.setInputValue(
                     elementId + '_beforeremoverow',
                     {
+                      n: n,
                       index: index,
                       amount: amount,
                       physicalRows: physicalRows,
@@ -208,6 +209,7 @@ HTMLWidgets.widget({
                   {
                     n: n,
                     action: action.actionType,
+                    key_name: params.key_column,
                     index: hot.toPhysicalRow(action.index),
                     data: action.data,
                     amount: action.amount
@@ -237,7 +239,7 @@ HTMLWidgets.widget({
                     key: key,
                     key_name: params.key_column,
                     row: action.changes.map(x => x[0]).map(x => hot.toPhysicalRow(x)),
-                    col: action.changes.map(x => x[1]),
+                    col: action.changes.map(x => x[1]).map(x => hot.getColHeader(x)),
                     val: action.changes.map(x => x[3])
                   }
                 )
