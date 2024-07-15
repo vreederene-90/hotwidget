@@ -46,10 +46,14 @@ HTMLWidgets.widget({
                   let index_col = hot.getColHeader().indexOf(changes[i][1])
 
                   if (hot.getSourceDataAtCol(index_col).includes(changes[i][3])) {
+
+                    alert("Unique constraint violation: " + changes[i][1] + ": " + changes[i][3])
+
                     return false;
                   }
                 }
               }
+
             }
           )
 
