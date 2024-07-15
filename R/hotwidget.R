@@ -33,8 +33,9 @@
 #' @param allowInsertRow Allow row inserting
 #' @param key_column Key column to identify rows (has to be integer), client will be updated with max + 1 for new rows
 #' @param undo Enable undo/redo functionality, if columnSorting is enabled, undo/redo is disabled
-#' @param ...
 #' @param hiddenColumns Default is enabled, to specify use list(columns = list(0,1,2), indicators = TRUE, copyPasteEnabled = FALSE)
+#' @param constraints
+#' @param ...
 #'
 #' @import htmlwidgets
 #' @description
@@ -51,6 +52,7 @@ hotwidget <- function(
     width = NULL,
     height = NULL,
     rowHeaders = FALSE,
+    constraints = NULL,
     undo = TRUE,
     columnSorting = TRUE,
     allowRemoveRow = TRUE,
@@ -129,6 +131,7 @@ hotwidget <- function(
     width = width,
     height = height,
     key_column = key_column,
+    constraints = constraints,
     undo = if(columnSorting) FALSE else undo,
     allowRemoveRow = allowRemoveRow,
     allowInsertRow = allowInsertRow,

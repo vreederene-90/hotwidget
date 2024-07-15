@@ -36,6 +36,24 @@ HTMLWidgets.widget({
           );
 
           hot.addHook(
+            'beforeChange',
+            function(changes, source) {
+
+              for (let i = changes.length - 1; i >= 0; i--) {
+
+                if (params.constraints.unique.includes(changes[i][1])) {
+
+                  let index_col = hot.getColHeader().indexOf(changes[i][1])
+
+                  if (hot.getSourceDataAtCol(index_col).includes(changes[i][3])) {
+                    return false;
+                  }
+                }
+              }
+            }
+          )
+
+          hot.addHook(
             'afterChange',
             function(changes, source) {
 
