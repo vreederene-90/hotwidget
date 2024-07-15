@@ -53,7 +53,6 @@ HTMLWidgets.widget({
                   }
                 }
               }
-
             }
           )
 
