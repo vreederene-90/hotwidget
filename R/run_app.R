@@ -10,7 +10,8 @@ run_app <-
       mutate(
         .before = 1,
         index = row_number(),
-        test = as_date(paste(Sys.Date()))
+        test = as_date(paste(Sys.Date())),
+        species = as.character(species)
       ) |> head(6)) {
 
     ui <- fluidPage(
@@ -75,6 +76,9 @@ run_app <-
               columnSorting = F,
               undo = TRUE,
               rowHeaders = TRUE,
+              constraints = list(
+                unique = list("species")
+              ),
               licenseKey = 'non-commercial-and-evaluation',
               data = hotwidget_data_rv()
               # hiddenColumns =

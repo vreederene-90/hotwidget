@@ -1,6 +1,6 @@
 Package: hotwidget
 Title: Create Mutatable Spreadsheet Visualisations in Shiny
-Version: 0.1.0.90010
+Version: 0.1.0.90011
 Authors@R: 
     person("René", "Vreede", , "vreede.rene@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
