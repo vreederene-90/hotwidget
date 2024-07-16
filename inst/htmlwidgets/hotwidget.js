@@ -63,9 +63,13 @@ HTMLWidgets.widget({
               n = n + 1
               let key = null;
 
-              if (params.key_column) key = changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
-
               if (["ContextMenu.clearColumn","edit","Autofill.fill","CopyPaste.cut","CopyPaste.paste"].includes(source)) {
+
+              if (params.key_column) {
+                key = changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
+              }
+
+
                 Shiny.setInputValue(
                   elementId + '_afterchange',
                   {
