@@ -20,12 +20,27 @@ run_app <-
           width = 6,
           textInput("name", "name dataset", value = "dataset"),
           hotwidgetOutput("hotwidget"),
-          selectInput(
-            "select",
-            multiple = T,
-            choices = c("species", "sepal_length", "sepal_width", "petal_length", "petal_width", "index", "test"),
-            label = "select",
-            selected = c("species", "sepal_length", "sepal_width", "petal_length", "petal_width", "index", "test")
+          shinyWidgets::pickerInput(
+            inputId = "select",
+            label = "Choose dimensions",
+            choices =
+              c(
+                "test",
+                "sepal_length",
+                "sepal_width",
+                "petal_length",
+                "petal_width",
+                "species"),
+            selected =
+              c("index",
+                "test",
+                "sepal_length"),
+            multiple = TRUE,
+            options = shinyWidgets::pickerOptions(
+              actionsBox = TRUE,
+              liveSearch = TRUE,
+              maxOptions = 15,
+              selectedTextFormat = "count"),
           )
         ),
         column(
@@ -76,11 +91,35 @@ run_app <-
               columnSorting = F,
               undo = TRUE,
               rowHeaders = TRUE,
-              constraints = list(
-                unique = list("species")
-              ),
+              # constraints = list(
+              #   unique = list("species")
+              # ),
               licenseKey = 'non-commercial-and-evaluation',
-              data = hotwidget_data_rv()
+              columns = list(
+                list(
+                  data = "species"
+                ),
+                list(
+                  data = "sepal_length"
+                ),
+                list(
+                  data = "sepal_width"
+                ),
+                list(
+                  data = "petal_length"
+                ),
+                list(
+                  data = "petal_width"
+                ),
+                list(
+                  data = "index"
+                ),
+                list(
+                  data = "test"
+                )
+              ) |>
+                keep(\(.x) .x[["data"]] %in% c("index",input$select)),
+              data = hotwidget_data_rv(),
               # hiddenColumns =
               #   list(
               #     indicators = TRUE,
@@ -88,7 +127,7 @@ run_app <-
               #   )
             )
           }
-        ) |> bindEvent(input$select)
+        )
 
       output$undo <- renderPrint(input$hotwidget_afterundo)
       output$redo <- renderPrint(input$hotwidget_afterredo)

@@ -39,17 +39,20 @@ HTMLWidgets.widget({
             'beforeChange',
             function(changes, source) {
 
-              for (let i = changes.length - 1; i >= 0; i--) {
+              if(params.constraints) {
 
-                if (params.constraints.unique.includes(changes[i][1])) {
+                for (let i = changes.length - 1; i >= 0; i--) {
 
-                  let index_col = hot.getColHeader().indexOf(changes[i][1])
+                  if (params.constraints.unique.includes(changes[i][1])) {
 
-                  if (hot.getSourceDataAtCol(index_col).includes(changes[i][3])) {
+                    let index_col = hot.getColHeader().indexOf(changes[i][1])
 
-                    alert("Unique constraint violation: " + changes[i][1] + ": " + changes[i][3])
+                    if (hot.getSourceDataAtCol(index_col).includes(changes[i][3])) {
 
-                    return false;
+                      alert("Unique constraint violation: " + changes[i][1] + ": " + changes[i][3])
+
+                      return false;
+                    }
                   }
                 }
               }
@@ -68,7 +71,6 @@ HTMLWidgets.widget({
               if (params.key_column) {
                 key = changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
               }
-
 
                 Shiny.setInputValue(
                   elementId + '_afterchange',
