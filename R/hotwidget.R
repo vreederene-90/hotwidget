@@ -31,10 +31,11 @@
 #'
 #' @param allowRemoveRow Allow the removal of rows
 #' @param allowInsertRow Allow row inserting
-#' @param key_column Key column to identify rows (has to be integer), client will be updated with max + 1 for new rows
+#' @param key_column key columns (in a list())
+#' @param key_column_plus integer column that is unique (will be set to +1 for new rows)
 #' @param undo Enable undo/redo functionality, if columnSorting is enabled, undo/redo is disabled
 #' @param hiddenColumns Default is enabled, to specify use list(columns = list(0,1,2), indicators = TRUE, copyPasteEnabled = FALSE)
-#' @param constraints
+#' @param constraints list(unique = list(column_that_has_to_be_unique))
 #' @param ...
 #'
 #' @import htmlwidgets
@@ -47,6 +48,7 @@
 hotwidget <- function(
     data,
     key_column = NULL,
+    key_column_plus = NULL,
     columns = NULL,
     hiddenColumns = list(),
     width = NULL,
@@ -131,6 +133,7 @@ hotwidget <- function(
     width = width,
     height = height,
     key_column = key_column,
+    key_column_plus = key_column_plus,
     constraints = constraints,
     undo = if(columnSorting) FALSE else undo,
     allowRemoveRow = allowRemoveRow,

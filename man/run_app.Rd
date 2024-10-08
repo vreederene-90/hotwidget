@@ -4,10 +4,7 @@
 \alias{run_app}
 \title{Test app for debugging, test and possibly example purposes}
 \usage{
-run_app(
-  hotwidget_data = head(mutate(janitor::clean_names(iris), .before = 1, index =
-    row_number(), test = as_date(paste(Sys.Date()))), 6)
-)
+run_app()
 }
 \arguments{
 \item{hotwidget_data}{data set}

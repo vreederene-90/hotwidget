@@ -12,14 +12,6 @@ HTMLWidgets.widget({
     return {
 
       renderValue: function(params) {
-        // params contains all options (inc. the data) passed via hotwidget()
-        // notably, params.key_column is used to identify the key value in the source data
-        //   this is in addition to the natural key that handsontable.js uses, so
-        //   you can use this key in order to take a shortcut to update databases
-        //   on the R side
-        // params.key_column needs to be an integer, because it is incremented by
-        //   1 for each new row (do not forget to update your database!)
-
         // n is used to always trigger the server to update the data
         //  if R sees no changes, the follow up code is not executed
         //  incrementing n fixes that
@@ -64,13 +56,14 @@ HTMLWidgets.widget({
             function(changes, source) {
 
               n = n + 1
-              let key = null;
+              let key = [];
 
               if (["ContextMenu.clearColumn","edit","Autofill.fill","CopyPaste.cut","CopyPaste.paste"].includes(source)) {
 
-              if (params.key_column) {
-                key = changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
-              }
+                if (params.key_column) {
+                  key = changes.map(x => x[0]).map(y => params.key_column.map(z => hot.getDataAtRowProp(y,z)))
+
+                }
 
                 Shiny.setInputValue(
                   elementId + '_afterchange',
@@ -91,25 +84,24 @@ HTMLWidgets.widget({
             'beforeRemoveRow',
             function(index, amount, physicalRows, source) {
 
-              let index_col = null;
+              let key = null;
               if (params.key_column) {
-                index_col = hot.getColHeader().indexOf(params.key_column)
-
-                if (source == 'ContextMenu.removeRow') {
-                  Shiny.setInputValue(
-                    elementId + '_beforeremoverow',
-                    {
-                      n: n,
-                      index: index,
-                      amount: amount,
-                      physicalRows: physicalRows,
-                      key: physicalRows.map(x => hot.getDataAtRow(x)[index_col]),
-                      key_name: params.key_column
-                    }
-                  )
-                }
+                key = physicalRows.map(x => params.key_column.map(y => hot.getDataAtRowProp(x,y)))
               }
 
+              if (source == 'ContextMenu.removeRow') {
+                Shiny.setInputValue(
+                  elementId + '_beforeremoverow',
+                  {
+                    n: n,
+                    index: index,
+                    amount: amount,
+                    physicalRows: physicalRows,
+                    key: key,
+                    key_name: params.key_column
+                  }
+                )
+              }
             }
           );
 
@@ -142,10 +134,12 @@ HTMLWidgets.widget({
 
               let new_index = null;
 
-              if (params.key_column) {
-                let new_index_col = hot.getColHeader().indexOf(params.key_column)
+              if (params.key_column_plus) {
+                // sets value of params.key_column_plus to ++
+                // has to be integer, can only be one column
+                let new_index_col = hot.getColHeader().indexOf(params.key_column_plus)
                 new_index = Math.max(...hot.getSourceDataAtCol(new_index_col)) + 1
-                hot.setSourceDataAtCell(hot.toPhysicalRow(index), params.key_column, new_index)
+                hot.setSourceDataAtCell(hot.toPhysicalRow(index), params.key_column_plus, new_index)
               }
 
               if (["ContextMenu.rowBelow","ContextMenu.rowAbove"].includes(source)) {
@@ -171,14 +165,14 @@ HTMLWidgets.widget({
               n = n + 1
               switch(action.actionType) {
                 case 'insert_row':
-                let index_col = null;
-                if (params.key_column) index_col = hot.getColHeader().indexOf(params.key_column)
+                let key = null;
+                if (params.key_column) key = params.key_column.map(x => hot.getDataAtRowProp(action.index, x))
                   Shiny.setInputValue(
                   elementId + '_beforeundo',
                   {
                     n: n,
                     action: action.actionType,
-                    key: hot.getSourceDataAtCell(hot.toPhysicalRow(action.index),index_col),
+                    key: key,
                     key_name: params.key_column,
                     amount: action.amount
                   }
@@ -200,7 +194,7 @@ HTMLWidgets.widget({
                 case 'change':
                 // its a reverse, so this is data needed for undo of a change
                 let key = null;
-                if (params.key_column) key = action.changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
+               if (params.key_column) key = action.changes.map(x => x[0]).map(x => params.key_column.map(y => hot.getDataAtRowProp(x,y)))
 
                 Shiny.setInputValue(
                   elementId + '_afterundo',
@@ -236,7 +230,6 @@ HTMLWidgets.widget({
                   {
                     n: n,
                     action: action.actionType,
-                    key_name: params.key_column,
                     index: hot.toPhysicalRow(action.index),
                     data: action.data,
                     amount: action.amount
@@ -256,7 +249,7 @@ HTMLWidgets.widget({
               switch(action.actionType) {
                 case 'change':
                 let key = null;
-                if (params.key_column) key = action.changes.map(x => x[0]).map(x => hot.getDataAtRowProp(x, params.key_column))
+                if (params.key_column) key = action.changes.map(x => x[0]).map(x => params.key_column.map(y => hot.getDataAtRowProp(x,y)))
 
                 Shiny.setInputValue(
                   elementId + '_afterredo',
@@ -278,7 +271,7 @@ HTMLWidgets.widget({
                   {
                     n: n,
                     action: action.actionType,
-                    key: hot.getDataAtRowProp(action.index, params.key_column),
+                    key: params.key_column.map(x => hot.getDataAtRowProp(action.index, x)),
                     key_name: params.key_column,
                     index: hot.toPhysicalRow(action.index),
                     amount: action.amount
