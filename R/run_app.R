@@ -14,6 +14,7 @@ run_app <-
         column(
           width = 6,
           actionButton("btn", "Debug"),
+          actionButton("switch_key_column", "Switch key_column"),
           column(
             width = 6,
             h5("afterundo data passed via hotwidget.js"),
@@ -42,11 +43,20 @@ run_app <-
 
     server <- function(input, output, session) {
 
+      observeEvent(
+        input$switch_key_column, {
+          if(input$switch_key_column %% 2 != 0) rv$keys <- list("index_1","index_2") else rv$keys <- list("index_1")
+
+        }
+      )
+
+      rv <- reactiveValues(keys = list("index_1"))
+
       output$hotwidget <-
         renderHotwidget(
           {
             hotwidget(
-              key_column = list("index_1","index_2","species"),
+              key_column = rv$keys,
               key_column_plus = c("index_1"),
               columnSorting = F,
               undo = TRUE,
