@@ -4,7 +4,6 @@
 #' @return app
 run_app <-
   function() {
-
     ui <- fluidPage(
       fluidRow(
         column(
@@ -42,31 +41,28 @@ run_app <-
     )
 
     server <- function(input, output, session) {
-
       observeEvent(
-        input$switch_key_column, {
-          if(input$switch_key_column %% 2 != 0) rv$keys <- list("index_1","index_2") else rv$keys <- list("index_1")
-
+        input$switch_key_column,
+        {
+          if (input$switch_key_column %% 2 != 0) rv$keys <- list("index_1", "index_2") else rv$keys <- list("index_1")
         }
       )
 
       rv <- reactiveValues(keys = list("index_1"))
 
       output$hotwidget <-
-        renderHotwidget(
-          {
-            hotwidget(
-              key_column = rv$keys,
-              key_column_plus = c("index_1"),
-              columnSorting = F,
-              undo = TRUE,
-              rowHeaders = TRUE,
-              licenseKey = 'non-commercial-and-evaluation',
-
-              data = head(iris) |> janitor::clean_names() |> mutate(.before = 1, index_1 = 1:6, index_2 = letters[1:6])
-            )
-          }
-        )
+        renderHotwidget({
+          hotwidget(
+            key_column = rv$keys,
+            constraints = list(unique = list("index_1", "index_2")),
+            key_column_plus = c("index_1"),
+            columnSorting = F,
+            undo = TRUE,
+            rowHeaders = TRUE,
+            licenseKey = "non-commercial-and-evaluation",
+            data = head(iris) |> janitor::clean_names() |> mutate(.before = 1, index_1 = 1:6, index_2 = letters[1:6])
+          )
+        })
 
       observeEvent(input$btn, browser())
 
@@ -79,7 +75,6 @@ run_app <-
       output$beforeremoverow <- renderPrint(input$hotwidget_beforeremoverow)
       output$beforeundo <- renderPrint(input$hotwidget_beforeundo)
       output$beforeredo <- renderPrint(input$hotwidget_beforeredo)
-
     }
-    shinyApp(ui,server)
+    shinyApp(ui, server)
   }

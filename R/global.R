@@ -46,12 +46,12 @@ loadSupport <- function(
       appDir, "NAMESPACE"
     )
   ) ||
-  (file.exists(descFile) &&
-   identical(
-     as.character(read.dcf(descFile, fields = "Type")),
-     "Package"
-   )
-  )
+    (file.exists(descFile) &&
+      identical(
+        as.character(read.dcf(descFile, fields = "Type")),
+        "Package"
+      )
+    )
   ) {
     # warning("Loading R/ subdirectory for Shiny application, but this directory appears ",
     #         "to contain an R package. Sourcing files in R/ may cause unexpected behavior.")
@@ -61,8 +61,7 @@ loadSupport <- function(
     if (file.exists(globalPath)) {
       withr::with_dir(appDir, {
         sourceUTF8(basename(globalPath), envir = globalrenv)
-      }
-      )
+      })
     }
   }
   helpersDir <- file.path(appDir, "R")
@@ -83,8 +82,7 @@ loadSupport <- function(
   helpers <- normalizePath(helpers)
   withr::with_dir(appDir, {
     lapply(helpers, sourceUTF8, envir = renv)
-  }
-  )
+  })
   invisible(renv)
 }
 
@@ -92,5 +90,3 @@ shiny_env <- environment(shiny:::loadSupport)
 unlockBinding("loadSupport", shiny_env)
 body(shiny_env$loadSupport) <- body(loadSupport)
 lockBinding("loadSupport", shiny_env)
-
-

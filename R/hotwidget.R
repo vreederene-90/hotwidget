@@ -65,9 +65,7 @@ hotwidget <- function(
     dropdownMenu = TRUE,
     contextMenu = TRUE,
     licenseKey = NA,
-    ...
-    ) {
-
+    ...) {
   if (is.na(licenseKey)) {
     cli::cli_alert_warning(
       "Missing license key"
@@ -84,49 +82,46 @@ hotwidget <- function(
   # numeric
   # text
 
-  if (is.null(columns))
+  if (is.null(columns)) {
     columns <- imap(
       col_types,
       \(x, idx) {
         list(
           data = idx,
-          type = switch(
-            x,
-            character = 'text',
-            numeric = 'numeric',
-            Date = 'date',
-            factor = 'dropdown',
-            integer = 'numeric',
-            'text'
+          type = switch(x,
+            character = "text",
+            numeric = "numeric",
+            Date = "date",
+            factor = "dropdown",
+            integer = "numeric",
+            "text"
           ),
-          source = switch(
-            x,
+          source = switch(x,
             factor = levels(data[[idx]]),
             NA
           ),
-          numericFormat = switch(
-            x,
-            numeric = list(pattern = '0'),
+          numericFormat = switch(x,
+            numeric = list(pattern = "0"),
             NA
           ),
-          dateFormat = switch(
-            x,
-            Date = 'YYYY-MM-DD',
+          dateFormat = switch(x,
+            Date = "YYYY-MM-DD",
             NA
           )
         )
       }
     ) |> unname()
+  }
 
   # forward options using x
-  x = list(
+  x <- list(
     data =
       jsonlite::toJSON(
-      data,
-      na = "null",
-      dataframe =
-        "rows",
-      digits = NA
+        data,
+        na = "null",
+        dataframe =
+          "rows",
+        digits = NA
       ),
     columns = columns,
     hiddenColumns = hiddenColumns,
@@ -135,7 +130,7 @@ hotwidget <- function(
     key_column = key_column,
     key_column_plus = key_column_plus,
     constraints = constraints,
-    undo = if(columnSorting) FALSE else undo,
+    undo = if (columnSorting) FALSE else undo,
     allowRemoveRow = allowRemoveRow,
     allowInsertRow = allowInsertRow,
     rowHeaders = rowHeaders,
@@ -144,37 +139,41 @@ hotwidget <- function(
     autoWrapRow = autoWrapRow,
     autoWrapCol = autoWrapCol,
     filters = filters,
-    dropdownMenu = if(dropdownMenu) {
+    dropdownMenu = if (dropdownMenu) {
       list(
-        'clear_column',
+        "clear_column",
         "filter_by_condition",
         "filter_by_condition2",
         "filter_operators",
         "filter_by_value",
         "filter_action_bar"
       )
-    } else FALSE,
-    contextMenu = if(contextMenu) {
+    } else {
+      FALSE
+    },
+    contextMenu = if (contextMenu) {
       list(
-        'row_above',
-        'row_below',
-        'remove_row',
-        'clear_column',
-        'hidden_columns_hide',
-        'hidden_columns_show'
+        "row_above",
+        "row_below",
+        "remove_row",
+        "clear_column",
+        "hidden_columns_hide",
+        "hidden_columns_show"
       )
-    } else FALSE,
+    } else {
+      FALSE
+    },
     licenseKey = licenseKey,
     ...
   )
 
   # create widget
   htmlwidgets::createWidget(
-    name = 'hotwidget',
+    name = "hotwidget",
     x,
     width = width,
     height = height,
-    package = 'hotwidget'
+    package = "hotwidget"
   )
 }
 
@@ -195,13 +194,15 @@ hotwidget <- function(
 #' @name hotwidget-shiny
 #'
 #' @export
-hotwidgetOutput <- function(outputId, width = '100%', height = '400px'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'hotwidget', width, height, package = 'hotwidget')
+hotwidgetOutput <- function(outputId, width = "100%", height = "400px") {
+  htmlwidgets::shinyWidgetOutput(outputId, "hotwidget", width, height, package = "hotwidget")
 }
 
 #' @rdname hotwidget-shiny
 #' @export
 renderHotwidget <- function(expr, env = parent.frame(), quoted = FALSE) {
-  if (!quoted) { expr <- substitute(expr) } # force quoted
+  if (!quoted) {
+    expr <- substitute(expr)
+  } # force quoted
   htmlwidgets::shinyRenderWidget(expr, hotwidgetOutput, env, quoted = TRUE)
 }

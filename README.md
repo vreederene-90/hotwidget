@@ -66,15 +66,15 @@ hotwidget(head(iris))
 library(hotwidget)
 run_app <-
   function(
-    hotwidget_data =
-      iris |>
-      janitor::clean_names() |>
-      mutate(
-        .before = 1,
-        index = row_number(),
-        test = as_date(paste(Sys.Date()))
-      ) |> head(6)) {
-
+      hotwidget_data =
+        iris |>
+          janitor::clean_names() |>
+          mutate(
+            .before = 1,
+            index = row_number(),
+            test = as_date(paste(Sys.Date()))
+          ) |>
+          head(6)) {
     ui <- fluidPage(
       fluidRow(
         column(
@@ -108,7 +108,6 @@ run_app <-
     )
 
     server <- function(input, output, session) {
-
       hotwidget_update(input, "hotwidget", hotwidget_data_rv, verbose = TRUE)
 
       hotwidget_data_rv <- reactiveVal()
@@ -118,17 +117,15 @@ run_app <-
       )
 
       output$hotwidget <-
-        renderHotwidget(
-          {
-            hotwidget(
-              columnSorting = FALSE,
-              undo = TRUE,
-              rowHeaders = TRUE,
-              licenseKey = 'non-commercial-and-evaluation',
-              data = isolate(hotwidget_data_rv())
-            )
-          }
-        ) |> bindEvent(input$select)
+        renderHotwidget({
+          hotwidget(
+            columnSorting = FALSE,
+            undo = TRUE,
+            rowHeaders = TRUE,
+            licenseKey = "non-commercial-and-evaluation",
+            data = isolate(hotwidget_data_rv())
+          )
+        }) |> bindEvent(input$select)
 
       output$undo <- renderPrint(input$hotwidget_afterundo)
       output$redo <- renderPrint(input$hotwidget_afterredo)
@@ -137,16 +134,14 @@ run_app <-
 
       session$onSessionEnded(
         function() {
-
-            assign(
-              x = isolate(input$name),
-              value = isolate(hotwidget_data_rv()),
-              envir = .GlobalEnv
-            )
-          }
-        )
-
+          assign(
+            x = isolate(input$name),
+            value = isolate(hotwidget_data_rv()),
+            envir = .GlobalEnv
+          )
+        }
+      )
     }
-    shinyApp(ui,server)
+    shinyApp(ui, server)
   }
 ```
