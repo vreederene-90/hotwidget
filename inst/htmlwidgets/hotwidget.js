@@ -19,6 +19,7 @@ HTMLWidgets.widget({
 
         let n = 0;
         if (hot) {
+          hot.loadData(params_updated.data);
           hot.updateSettings(params_updated);
         }
 
